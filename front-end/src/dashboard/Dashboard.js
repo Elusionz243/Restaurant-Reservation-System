@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { listReservations, listTables, clearTable } from "../utils/api";
+import React, { useEffect, useState, Link } from "react";
+import { useHistory } from 'react-router-dom';
+import { listReservations, listTables, clearTable, cancelReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from '../utils/useQuery';
 
@@ -11,10 +12,11 @@ import useQuery from '../utils/useQuery';
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
+  const [reservationsError, setReservationErrors] = useState(null);
   const [tables, setTables] = useState([]);
   const [tableErrors, setTableErrors] = useState(null);
 
+  const history = useHistory();
   const query = useQuery();
   if (query.get('date')) date = query.get('date');
 
@@ -22,10 +24,10 @@ function Dashboard({ date }) {
 
   function loadDashboard() {
     const abortController = new AbortController();
-    setReservationsError(null);
+    setReservationErrors(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
-      .catch(setReservationsError);
+      .catch(setReservationErrors);
     listTables(abortController.signal)
       .then(setTables)
       .catch(setTableErrors);
@@ -42,6 +44,20 @@ function Dashboard({ date }) {
     }
 
     return () => abortController.abort();
+  }
+
+  const handleCancelReservation = async (reservation_id) => {
+    try {
+      const abortController = new AbortController();
+
+      if(window.confirm('Do you want to cancel this reservation? This cannot be undone.')) {
+        await cancelReservation(reservation_id, abortController.signal);
+        loadDashboard();
+      }
+      return () => abortController.abort();
+    } catch (error) {
+      setReservationErrors(error);
+    }
   }
 
   return (
@@ -64,9 +80,10 @@ function Dashboard({ date }) {
                 <p data-reservation-id-status={reservation_id}>Status: {status}</p>
               </div>
               <div className='card-footer'>
-                {status === 'booked' ? <a className='btn btn-success' href={`/reservations/${reservation_id}/seat`}>Seat</a>
+                {status === 'booked' ? <Link className='btn btn-success' to={`/reservations/${reservation_id}/seat`}>Seat</Link>
                 : null}
-                <a className='btn btn-secondary' href={`/reservations/${reservation_id}/edit`}></a>
+                <Link className='btn btn-secondary' to={`/reservations/${reservation_id}/edit`}>Edit</Link>
+                <button className='btn btn-danger' onClick={() => handleCancelReservation(reservation_id)} data-reservation-id-cancel={reservation_id}>Cancel</button>
               </div>
             </div>
           );

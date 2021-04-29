@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { createReservations, readReservation } from '../utils/api';
+import { useHistory } from 'react-router-dom';
+import { createReservations } from '../utils/api';
 import ErrorAlert from '../layout/ErrorAlert';
 
 export default function CreateReservation() {
-  const reservation_id = useParams();
-  const abortController = new AbortController();
 
   const initialReservationData = {
     first_name: '',
