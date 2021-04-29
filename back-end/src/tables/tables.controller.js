@@ -16,7 +16,7 @@ const update = async (req, res, next) => {
     return next({ status: 400, message: `'data' key is required` });
   }
 
-  const { reservation_id, capacity } = req.body.data;
+  const { reservation_id } = req.body.data;
 
   const knex = req.app.get('db');
 
@@ -44,8 +44,8 @@ const update = async (req, res, next) => {
   if(reservation.status === 'seated') {
     return next({ status: 400, message: `Reservation has already been seated.` });
   } 
-    await reservationService.updateReservation(knex, reservation.reservation_id, 'seated');
-  res.status(200).json({data: await service.updateTable(knex, table.table_id, reservation.reservation_id) });
+  await reservationService.updateReservation(knex, reservation.reservation_id, 'seated');
+  res.status(200).json({ data: await service.updateTable(knex, table.table_id, reservation.reservation_id) });
 }
 
 const create = async (req, res) => {

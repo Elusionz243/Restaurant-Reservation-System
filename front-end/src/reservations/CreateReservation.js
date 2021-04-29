@@ -1,36 +1,47 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { createReservations, listReservations } from '../utils/api';
+import { useHistory, useParams } from 'react-router-dom';
+import { createReservations, readReservation } from '../utils/api';
+import ErrorAlert from '../layout/ErrorAlert';
 
 export default function CreateReservation() {
+  const reservation_id = useParams();
+  const abortController = new AbortController();
+
   const initialReservationData = {
     first_name: '',
     last_name: '',
     mobile_number: '',
     reservation_date: '',
     reservation_time: '',
-    people: '',
+    people: 1,
   };
-  const [reservationData, setReservationData] = useState({...initialReservationData})
+
+  const [reservationData, setReservationData] = useState({ ...initialReservationData });
+  const [reservationErrors, setReservationErrors] = useState(null);
 
   const history = useHistory();
 
-  const handleChange = ({target}) => {
-    setReservationData({...reservationData, [target.name]: target.value});
+  const handleChange = ({ target }) => {
+    const value = target.type === 'number' ? Number(target.value) : target.value;
+    setReservationData({ ...reservationData, [target.name]: value });
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const abortController = new AbortController();
-    createReservations({ data: reservationData }, { signal: abortController.signal });
-    setReservationData({...initialReservationData});
-    await listReservations(event.target.reservation_date, abortController.signal);
-    history.push(`/dashboard`);
+  const handleSubmit = (event) => {
+      event.preventDefault();
+
+      const abortController = new AbortController();
+
+      createReservations(reservationData, abortController.signal)
+      .then(() => {
+        history.push(`/dashboard?date=${reservationData.reservation_date}`); 
+        setReservationData({ ...initialReservationData });
+      })
+      .catch(setReservationErrors);
   }
 
   const handleCancel = (event) => {
     event.preventDefault();
-    setReservationData({...initialReservationData});
+    setReservationData({ ...initialReservationData });
     history.goBack();
   }
 
@@ -43,6 +54,7 @@ export default function CreateReservation() {
           <input
             id='first_name'
             name='first_name'
+            type='text'
             onChange={handleChange}
             value={reservationData.first_name}
           />
@@ -52,12 +64,13 @@ export default function CreateReservation() {
           <input
             id='last_name'
             name='last_name'
+            type='text'
             onChange={handleChange}
             value={reservationData.last_name}
           />
         </label>
         <label htmlFor='mobile_number'>
-          Mobile Number: 
+          Mobile Number:
           <input
             id='mobile_number'
             name='mobile_number'
@@ -94,14 +107,16 @@ export default function CreateReservation() {
           <input
             id='people'
             name='people'
+            type='number'
             placeholder='1 or greater'
             onChange={handleChange}
             value={reservationData.people}
           />
         </label>
         <button type='submit' className='btn btn-primary'>Submit</button>
-        <button className = 'btn btn-secondary' onClick={handleCancel}>Cancel</button>
+        <button className='btn btn-secondary' onClick={handleCancel}>Cancel</button>
       </form>
+      <ErrorAlert error={reservationErrors} />
     </div>
   );
 }
