@@ -9,7 +9,7 @@ The user can create new reservations and search for standing reservations by mob
 Keep track of where reservations are seated and occupied tables.
 
 ## Screenshots
-![Image of Dashboard](https://drive.google.com/file/d/1UH6hth3mxRwHItor07nk_UVhKqSoADNL/view?usp=sharing)
+![Image of Dashboard](https://i.ibb.co/C1kcxQg/Dashboard.jpg)
 ![Image of New Reservation](http://reservation.councilstudios.com/images/ss-2.jpg)
 ## Tech Stack
 This web app was developed using JavaScript, React, Express, Node, PostgreSQL, KnexJS, HTML, CSS, and BootStrap.
