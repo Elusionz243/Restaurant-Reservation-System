@@ -10,7 +10,7 @@ Keep track of where reservations are seated and occupied tables.
 
 ## Screenshots
 ![Image of Dashboard](https://i.ibb.co/C1kcxQg/Dashboard.jpg)
-![Image of New Reservation](http://reservation.councilstudios.com/images/ss-2.jpg)
+![Image of New Reservation](https://i.ibb.co/HHCwk75/Create-Reservation.jpg)
 ## Tech Stack
 This web app was developed using JavaScript, React, Express, Node, PostgreSQL, KnexJS, HTML, CSS, and BootStrap.
 
