@@ -1,5 +1,6 @@
 const service = require("./tables.service");
 const reservationService = require('../reservations/reservations.service');
+const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
 const list = async (req, res) => {
   const knex = req.app.get("db");
@@ -109,9 +110,21 @@ const hasProperties = (req, res, next) => {
 }
 
 module.exports = {
-  list,
-  read: [tableExists, read],
-  create: [hasProperties, create],
-  update: [tableExists, update],
-  unreserve: [tableExists, unreserve],
+  list: [asyncErrorBoundary(list)],
+  read: [
+    asyncErrorBoundary(tableExists), 
+    asyncErrorBoundary(read)
+  ],
+  create: [
+    asyncErrorBoundary(hasProperties), 
+    asyncErrorBoundary(create)
+  ],
+  update: [
+    asyncErrorBoundary(tableExists), 
+    asyncErrorBoundary(update)
+  ],
+  unreserve: [
+    asyncErrorBoundary(tableExists), 
+    asyncErrorBoundary(unreserve)
+  ],
 }

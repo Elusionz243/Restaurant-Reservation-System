@@ -121,7 +121,7 @@ export async function seatReservation({reservation_id}, table_id, signal) {
   const url = new URL(`${API_BASE_URL}/tables/${table_id}/seat`);
   
   const data = { data: {reservation_id, table_id } };
-  console.log(data);
+  
   const options = {
     method: "PUT",
     headers,
@@ -154,5 +154,5 @@ export async function cancelReservation(reservation_id, signal) {
     body: JSON.stringify(data),
     signal,
   };
-  return await fetchJson(url, options, []);
+  return await fetchJson(url, options);
 }

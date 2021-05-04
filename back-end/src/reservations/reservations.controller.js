@@ -1,4 +1,5 @@
 const service = require('./reservations.service');
+const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
 const list = async (req, res) => {
   const knex = req.app.get('db');
@@ -10,9 +11,6 @@ const list = async (req, res) => {
     return;
   } else if(mobile_number) {
     res.json({ data: await service.readReservationByMobileNumber(knex, mobile_number) });
-    return;
-  } else {
-    res.json({ data: await service.listAllReservations(knex) });
     return;
   }
 }
@@ -175,9 +173,23 @@ const validateReservation = (req, res, next) => {
   }
 
   module.exports = {
-    list,
-    create: [hasProperties, create],
-    read: [reservationExists, read],
-    update: [validateReservation, reservationExists, update],
-    updateReservation: [reservationExists, hasProperties, updateReservation],
+    list: [asyncErrorBoundary(list)],
+    create: [
+      asyncErrorBoundary(hasProperties), 
+      asyncErrorBoundary(create)
+    ],
+    read: [
+      asyncErrorBoundary(reservationExists), 
+      asyncErrorBoundary(read)
+    ],
+    update: [
+      asyncErrorBoundary(validateReservation), 
+      asyncErrorBoundary(reservationExists), 
+      asyncErrorBoundary(update)
+    ],
+    updateReservation: [
+      asyncErrorBoundary(reservationExists), 
+      asyncErrorBoundary(hasProperties), 
+      asyncErrorBoundary(updateReservation)
+    ],
   };

@@ -7,8 +7,6 @@ import CreateReservation from '../reservations/CreateReservation';
 import CreateTables from '../tables/CreateTables';
 import SeatReservation from '../reservations/SeatReservation';
 import Search from './Search';
-
-import { today } from "../utils/date-time";
 import EditReservation from "../reservations/EditReservation";
 
 /**
@@ -28,10 +26,10 @@ function Routes() {
         <Redirect to={"/dashboard"} />
       </Route>
       <Route path="/dashboard">
-        <Dashboard date={today()} />
+        <Dashboard />
       </Route>
       <Route path='/dashboard*'>
-        <Dashboard date={today()} />
+        <Dashboard />
       </Route>
       <Route exact={true} path='/reservations/new'>
         <CreateReservation />
